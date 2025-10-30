@@ -13,7 +13,6 @@ import {
   Slider,
   FormControlLabel,
   Switch,
-  Chip,
 } from '@mui/material';
 import {
   Search,
@@ -29,11 +28,6 @@ interface AddressInputProps {
   loading?: boolean;
   error?: string | null;
 }
-
-const EXAMPLE_ADDRESSES = [
-  '1DrDyTr9RpRsQnDnXo2YRiPzPW4ooHX5LLoqXrqfMrpQH',
-  '1C2RAVWSuaXw8xtUxqVERR7ChKBE1XgscNFw73NSHE1v3',
-];
 
 const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, error = null }) => {
   const { filters, setFilters } = useAppContext();
@@ -67,11 +61,7 @@ const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, 
     setValidationError(null);
   };
 
-  const handleExampleClick = (exampleAddress: string) => {
-    setAddress(exampleAddress);
-    setValidationError(null);
-    onSearch(exampleAddress);
-  };
+  // Example addresses removed
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
@@ -125,21 +115,7 @@ const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, 
         </Alert>
       )}
 
-      <Box display="flex" gap={1} mb={2} flexWrap="wrap">
-        <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
-          Try examples:
-        </Typography>
-        {EXAMPLE_ADDRESSES.map((exampleAddr, index) => (
-          <Chip
-            key={index}
-            label={`${exampleAddr.substring(0, 8)}...${exampleAddr.substring(exampleAddr.length - 6)}`}
-            size="small"
-            onClick={() => handleExampleClick(exampleAddr)}
-            disabled={loading}
-            sx={{ cursor: 'pointer' }}
-          />
-        ))}
-      </Box>
+      
 
       <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
         <AccordionSummary expandIcon={<ExpandMore />}>
@@ -172,22 +148,7 @@ const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, 
               />
             </Box>
 
-            <Box>
-              <Typography variant="body2" gutterBottom>
-                Maximum Depth: {filters.maxDepth}
-              </Typography>
-              <Slider
-                value={filters.maxDepth}
-                onChange={(_, value) =>
-                  setFilters({ ...filters, maxDepth: value as number })
-                }
-                min={1}
-                max={5}
-                step={1}
-                marks
-                disabled={loading}
-              />
-            </Box>
+            {/* Depth control temporarily removed */}
 
             <Box display="flex" gap={2}>
               <FormControlLabel
