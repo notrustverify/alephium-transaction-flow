@@ -12,7 +12,7 @@ import ReactFlow, {
   Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box, IconButton, Tooltip, Paper, Typography, Switch, FormControlLabel } from '@mui/material';
+import { Box, IconButton, Tooltip, Paper, Typography, Switch, FormControlLabel, useTheme } from '@mui/material';
 import {
   CenterFocusStrong,
   Refresh,
@@ -69,6 +69,8 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
   const [showSelfTransactions, setShowSelfTransactions] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
 
   const handleToggleFullscreen = useCallback(() => {
     const el = containerRef.current;
@@ -284,7 +286,15 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
   }
 
   return (
-    <Box ref={containerRef} sx={{ height: '100%', width: '100%', position: 'relative' }}>
+    <Box
+      ref={containerRef}
+      sx={{
+        height: '100%',
+        width: '100%',
+        position: 'relative',
+        backgroundColor: 'background.default',
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -301,7 +311,12 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
         minZoom={0.1}
         maxZoom={2}
       >
-        <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={16}
+          size={1}
+          color={isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
+        />
         <Controls />
         <MiniMap
           nodeColor={(node) => {
