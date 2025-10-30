@@ -34,7 +34,7 @@ jobs:
         env:
           # Optionally set this if deploying to a repo page (not user/org page)
           # Update BASE_PATH to your repository name, e.g. "/graph-explorer/"
-          VITE_BASE_PATH: ""
+          VITE_BASE_PATH: "/alephium-transaction-flow/"
         run: |
           yarn build
 

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Box, Paper, Typography, Tooltip } from '@mui/material';
+import { Paper, Typography, Tooltip } from '@mui/material';
 import { TransactionNodeData } from '../../types';
 import { formatRelativeTime, formatTransactionHash } from '../../utils';
 

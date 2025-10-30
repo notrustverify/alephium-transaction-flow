@@ -9,7 +9,7 @@ import InfoPanel from './components/InfoPanel';
 import Legend from './components/Legend';
 import Statistics from './components/Statistics';
 import { useTransactionFlow } from './hooks';
-import { CustomNode, NodeType, CustomEdge } from './types';
+import { CustomNode, NodeType } from './types';
 
 const AppContent: React.FC = () => {
   const { darkMode, filters, setSelectedAddress } = useAppContext();
