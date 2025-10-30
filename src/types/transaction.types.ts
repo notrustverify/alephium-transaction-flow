@@ -45,6 +45,7 @@ export interface AddressTransaction {
   toAddress: string;
   confirmations?: number;
   fee?: string;
+  isDappInteraction?: boolean;
 }
 
 export interface AddressBalance {

@@ -33,7 +33,7 @@ const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, 
   const { filters, setFilters } = useAppContext();
   const [address, setAddress] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -117,14 +117,31 @@ const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, 
 
       
 
-      <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
-        <AccordionSummary expandIcon={<ExpandMore />}>
-          <Box display="flex" alignItems="center" gap={1}>
-            <TuneOutlined fontSize="small" />
-            <Typography variant="subtitle2">Advanced Options</Typography>
-          </Box>
-        </AccordionSummary>
-        <AccordionDetails>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <TuneOutlined fontSize="small" />
+          <Typography variant="subtitle2">Advanced Options</Typography>
+        </Box>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showAdvanced}
+              onChange={(e) => setShowAdvanced(e.target.checked)}
+              size="small"
+              disabled={loading}
+            />
+          }
+          label="Show"
+          sx={{ m: 0 }}
+        />
+      </Box>
+
+      {showAdvanced && (
+        <Accordion expanded>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Typography variant="subtitle2">Options</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
           <Box display="flex" flexDirection="column" gap={3}>
             <Box>
               <Typography variant="body2" gutterBottom>
@@ -176,9 +193,10 @@ const AddressInput: React.FC<AddressInputProps> = ({ onSearch, loading = false, 
                 label="Show Outgoing"
               />
             </Box>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+      )}
     </Paper>
   );
 };

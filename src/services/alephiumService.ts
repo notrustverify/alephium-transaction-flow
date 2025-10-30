@@ -47,12 +47,15 @@ class AlephiumService {
 
   isContractAddress(address: string): boolean {
     try {
-      // Use @alephium/web3 to check if it's a contract address
-      // Try to get contract ID from address - if it succeeds, it's a contract
+      // Prefer SDK's isContract if available
+      const maybeIsContract = (web3 as any)?.isContract;
+      if (typeof maybeIsContract === 'function') {
+        return Boolean(maybeIsContract(address));
+      }
+      // Fallback: derive contract id from address (throws for non-contract)
       contractIdFromAddress(address);
       return true;
     } catch {
-      // If conversion fails, it's a regular address
       return false;
     }
   }
@@ -126,6 +129,10 @@ class AlephiumService {
       const transactions: AddressTransaction[] = [];
 
       for (const tx of txs) {
+        // Detect dApp interaction: any output with type === 'ContractOutput'
+        const isDappInteraction = Array.isArray(tx.outputs)
+          ? tx.outputs.some((o: any) => o?.type === 'ContractOutput')
+          : false;
         // Check if this address is in inputs (sender) or outputs (receiver)
         const isIncoming = tx.outputs?.some((output: any) => output.address === address);
         const isOutgoing = tx.inputs?.some((input: any) => input.address === address);
@@ -168,6 +175,7 @@ class AlephiumService {
           amount: amount === '0' ? '1000000000000000000' : amount, // Default to 1 ALPH if amount is 0
           fromAddress,
           toAddress,
+          isDappInteraction,
         });
       }
 

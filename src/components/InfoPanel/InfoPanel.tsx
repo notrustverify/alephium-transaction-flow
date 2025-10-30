@@ -28,7 +28,7 @@ import {
   formatRelativeTime,
   copyToClipboard,
   getExplorerUrl,
-  getAddressExplorerUrl,
+  getTransactionsListUrl,
 } from '../../utils';
 import { useAppContext } from '../../context/AppContext';
 
@@ -177,7 +177,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({
                 size="small"
                 startIcon={<OpenInNew />}
                 onClick={() =>
-                  window.open(getAddressExplorerUrl(data.address || '', network), '_blank')
+                  window.open(getTransactionsListUrl(network), '_blank')
                 }
                 fullWidth
               >

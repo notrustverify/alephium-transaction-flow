@@ -1,6 +1,7 @@
 import React from 'react';
 import { EdgeProps, getBezierPath, EdgeLabelRenderer } from 'reactflow';
 import { CustomEdgeData } from '../../types';
+import { formatAlphAmount } from '../../utils';
 
 const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
   id,
@@ -30,7 +31,7 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
   };
 
   const color = getColor();
-  const strokeDasharray = data?.type === 'outgoing' ? '6 3' : undefined;
+  const strokeDasharray = undefined; // outgoing now solid line
   const strokeWidth = data?.type ? 2.25 : 1.75;
 
   return (
@@ -49,7 +50,7 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         }}
         markerEnd="url(#arrow)"
       />
-      {data?.label && (
+      {(data?.label || data?.amount) && (
         <EdgeLabelRenderer>
           <div
             style={{
@@ -64,7 +65,7 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
             }}
             className="nodrag nopan"
           >
-            {data.label}
+            {data.label || `${formatAlphAmount(data.amount || '0', 2)} ALPH`}
           </div>
         </EdgeLabelRenderer>
       )}

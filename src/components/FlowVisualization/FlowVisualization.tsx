@@ -149,10 +149,17 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
               continue;
             }
 
-            // Carry over basic edge data when available
-            const label = (outEdge as any).data?.label ?? (inEdge as any).data?.label ?? '';
-            const amount = (outEdge as any).data?.amount ?? (inEdge as any).data?.amount ?? '';
-            const type = (outEdge as any).data?.type ?? (inEdge as any).data?.type;
+            // Carry over basic edge data when available and determine direction
+            const inData = (inEdge as any).data || {};
+            const outData = (outEdge as any).data || {};
+            const label = outData.label ?? inData.label ?? '';
+            const amount = outData.amount ?? inData.amount ?? '';
+            const edgeType = (inData.type === 'incoming' || outData.type === 'incoming')
+              ? 'incoming'
+              : (inData.type === 'outgoing' || outData.type === 'outgoing')
+                ? 'outgoing'
+                : undefined;
+            const hash = outData.hash || inData.hash;
 
             const id = `${newSource}->${newTarget}::via::${removedId}::${label || amount}`;
             rewiredEdges.push({
@@ -160,9 +167,9 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
               source: newSource,
               target: newTarget,
               type: 'default',
-              data: type
-                ? { label, amount, type } as any
-                : ({ label, amount } as any),
+              data: edgeType
+                ? ({ label, amount, type: edgeType, hash } as any)
+                : ({ label, amount, hash } as any),
             });
           }
         }
@@ -378,6 +385,7 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
               }
               label={<Typography variant="caption">Legend</Typography>}
             />
+
 
             <Tooltip title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'} arrow>
               <IconButton onClick={handleToggleFullscreen} size="small">

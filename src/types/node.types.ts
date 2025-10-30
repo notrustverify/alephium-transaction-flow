@@ -54,6 +54,7 @@ export interface CustomEdgeData {
   label: string;
   animated?: boolean;
   type: 'incoming' | 'outgoing';
+  hash?: string;
 }
 
 export type CustomEdge = Edge<CustomEdgeData>;

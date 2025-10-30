@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box, Container, Snackbar, Alert } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Container, Snackbar, Alert, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 import { ReactFlowProvider, Edge } from 'reactflow';
 import { AppProvider, useAppContext } from './context/AppContext';
 import AppBar from './components/AppBar';
@@ -10,9 +11,10 @@ import Legend from './components/Legend';
 import Statistics from './components/Statistics';
 import { useTransactionFlow } from './hooks';
 import { CustomNode, NodeType } from './types';
+import { getExplorerUrl, getAddressExplorerUrl } from './utils';
 
 const AppContent: React.FC = () => {
-  const { darkMode, filters, setSelectedAddress } = useAppContext();
+  const { darkMode, filters, setSelectedAddress, network } = useAppContext();
   const [selectedNode, setSelectedNode] = useState<CustomNode | null>(null);
   const [infoPanelOpen, setInfoPanelOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -38,6 +40,7 @@ const AppContent: React.FC = () => {
 
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
   const [showLegend, setShowLegend] = useState<boolean>(false);
+  const [statsExpanded, setStatsExpanded] = useState<boolean>(false);
 
   const theme = React.useMemo(
     () =>
@@ -79,21 +82,34 @@ const AppContent: React.FC = () => {
   );
 
   const handleNodeClick = useCallback((node: CustomNode) => {
+    if (
+      node.type === NodeType.CENTRAL_ADDRESS ||
+      node.type === NodeType.CONNECTED_ADDRESS
+    ) {
+      const address = node.data.address;
+      if (address) {
+        window.open(getAddressExplorerUrl(address, network), '_blank');
+        return;
+      }
+    }
     setSelectedNode(node);
     setInfoPanelOpen(true);
-  }, []);
+  }, [network]);
 
   const handleEdgeClick = useCallback((edge: Edge) => {
-    // Extract transaction hash from edge ID (format: edge-{source}-{target} or edge-{txNodeId}-...)
+    const hash = (edge as any).data?.hash as string | undefined;
+    if (hash) {
+      window.open(getExplorerUrl(hash, network), '_blank');
+      return;
+    }
+    // Fallback to previous behavior (unlikely now)
     const txNodeId = edge.source.startsWith('tx-') ? edge.source : edge.target;
-    
-    // Find the transaction node
-    const txNode = nodes.find(n => n.id === txNodeId);
+    const txNode = nodes.find((n) => n.id === txNodeId);
     if (txNode) {
       setSelectedNode(txNode as CustomNode);
       setInfoPanelOpen(true);
     }
-  }, [nodes]);
+  }, [nodes, network, setInfoPanelOpen, setSelectedNode]);
 
   const handleNodeDoubleClick = useCallback(
     async (node: CustomNode) => {
@@ -160,8 +176,19 @@ const AppContent: React.FC = () => {
         <Container maxWidth="xl" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', py: 3 }}>
           <AddressInput onSearch={handleSearch} loading={loading} error={error} />
 
-          {transactions.length > 0 && currentAddress && (
-            <Statistics transactions={transactions} balance={balance} address={currentAddress} />
+          {currentAddress && (
+            <Accordion expanded={statsExpanded} onChange={() => setStatsExpanded(!statsExpanded)} sx={{ mb: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography variant="subtitle2">Statistics</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {transactions.length > 0 ? (
+                  <Statistics transactions={transactions} balance={balance} address={currentAddress} />
+                ) : (
+                  <Typography variant="caption" color="text.secondary">No transactions to show yet.</Typography>
+                )}
+              </AccordionDetails>
+            </Accordion>
           )}
 
           <Box sx={{ flexGrow: 1, position: 'relative', minHeight: 500 }}>

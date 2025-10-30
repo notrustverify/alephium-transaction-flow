@@ -14,8 +14,10 @@ interface StatisticsProps {
 }
 
 const Statistics: React.FC<StatisticsProps> = ({ transactions, balance }) => {
-  const incomingTransactions = transactions.filter((tx) => tx.type === 'incoming');
-  const outgoingTransactions = transactions.filter((tx) => tx.type === 'outgoing');
+  // ignore contract/dApp interactions in statistics
+  const nonDappTxs = transactions.filter((tx) => !tx.isDappInteraction);
+  const incomingTransactions = nonDappTxs.filter((tx) => tx.type === 'incoming');
+  const outgoingTransactions = nonDappTxs.filter((tx) => tx.type === 'outgoing');
 
   const totalIncoming = incomingTransactions.reduce(
     (sum, tx) => sum + BigInt(tx.amount),

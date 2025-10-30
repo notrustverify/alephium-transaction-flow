@@ -206,8 +206,9 @@ export const transformTransactionsToGraph = (
         animated: false,
         data: {
           amount: tx.amount,
-          label: `${humanizedAmount} ALPH`,
+          label: `${humanizedAmount} ALPH${tx.isDappInteraction ? ' (dApp)' : ''}`,
           type: 'incoming' as const,
+          hash: tx.hash,
         },
         style: { stroke: '#4caf50', strokeWidth: 2 },
       } as CustomEdge);
@@ -221,6 +222,7 @@ export const transformTransactionsToGraph = (
           amount: tx.amount,
           label: '',
           type: 'incoming' as const,
+          hash: tx.hash,
         },
         style: { stroke: '#4caf50', strokeWidth: 2 },
       } as CustomEdge);
@@ -235,6 +237,7 @@ export const transformTransactionsToGraph = (
           amount: tx.amount,
           label: '',
           type: 'outgoing' as const,
+          hash: tx.hash,
         },
         style: { stroke: '#ff9800', strokeWidth: 2 },
       } as CustomEdge);
@@ -246,8 +249,9 @@ export const transformTransactionsToGraph = (
         animated: false,
         data: {
           amount: tx.amount,
-          label: `${humanizedAmount} ALPH`,
+          label: `${humanizedAmount} ALPH${tx.isDappInteraction ? ' (dApp)' : ''}`,
           type: 'outgoing' as const,
+          hash: tx.hash,
         },
         style: { stroke: '#ff9800', strokeWidth: 2 },
       } as CustomEdge);

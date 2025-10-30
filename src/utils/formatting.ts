@@ -60,6 +60,16 @@ export const getExplorerUrl = (hash: string, network: string): string => {
   return `${baseUrl}/transactions/${hash}`;
 };
 
+export const getTransactionsListUrl = (network: string): string => {
+  const baseUrls: Record<string, string> = {
+    mainnet: 'https://explorer.alephium.org',
+    testnet: 'https://testnet.alephium.org',
+    devnet: 'http://localhost:23000',
+  };
+  const baseUrl = baseUrls[network] || baseUrls.mainnet;
+  return `${baseUrl}/transactions/`;
+};
+
 export const getAddressExplorerUrl = (address: string, network: string): string => {
   const baseUrls: Record<string, string> = {
     mainnet: 'https://explorer.alephium.org',
