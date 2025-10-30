@@ -37,6 +37,7 @@ const AppContent: React.FC = () => {
   } = useTransactionFlow();
 
   const [currentAddress, setCurrentAddress] = useState<string | null>(null);
+  const [showLegend, setShowLegend] = useState<boolean>(false);
 
   const theme = React.useMemo(
     () =>
@@ -173,8 +174,10 @@ const AppContent: React.FC = () => {
                 onEdgeClick={handleEdgeClick}
                 onRefresh={handleRefresh}
                 loading={loading}
+                showLegend={showLegend}
+                onToggleLegend={() => setShowLegend((v) => !v)}
               />
-              {nodes.length > 0 && <Legend />}
+              {nodes.length > 0 && showLegend && <Legend />}
             </ReactFlowProvider>
           </Box>
         </Container>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
   Edge,
   Controls,
@@ -16,6 +16,8 @@ import { Box, IconButton, Tooltip, Paper, Typography, Switch, FormControlLabel }
 import {
   CenterFocusStrong,
   Refresh,
+  Fullscreen,
+  FullscreenExit,
 } from '@mui/icons-material';
 import {
   CentralAddressNode,
@@ -46,6 +48,8 @@ interface FlowVisualizationProps {
   onEdgeClick?: (edge: Edge) => void;
   onRefresh?: () => void;
   loading?: boolean;
+  showLegend?: boolean;
+  onToggleLegend?: () => void;
 }
 
 const FlowVisualization: React.FC<FlowVisualizationProps> = ({
@@ -56,11 +60,31 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
   onEdgeClick,
   onRefresh,
   loading = false,
+  showLegend = false,
+  onToggleLegend,
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   const [showSelfTransactions, setShowSelfTransactions] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleToggleFullscreen = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (!document.fullscreenElement) {
+      el.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  }, []);
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
 
   const filterHiddenNodesAndEdges = useCallback(
     (nodesToFilter: CustomNode[], edgesToFilter: Edge[]) => {
@@ -260,7 +284,7 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
   }
 
   return (
-    <Box sx={{ height: '100%', width: '100%', position: 'relative' }}>
+    <Box ref={containerRef} sx={{ height: '100%', width: '100%', position: 'relative' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -327,6 +351,24 @@ const FlowVisualization: React.FC<FlowVisualizationProps> = ({
               }
               label={<Typography variant="caption">Show self transfers</Typography>}
             />
+
+            <FormControlLabel
+              sx={{ ml: 0.5 }}
+              control={
+                <Switch
+                  size="small"
+                  checked={!!showLegend}
+                  onChange={() => onToggleLegend && onToggleLegend()}
+                />
+              }
+              label={<Typography variant="caption">Legend</Typography>}
+            />
+
+            <Tooltip title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'} arrow>
+              <IconButton onClick={handleToggleFullscreen} size="small">
+                {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+              </IconButton>
+            </Tooltip>
           </Paper>
         </Panel>
       </ReactFlow>
